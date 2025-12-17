@@ -1,6 +1,6 @@
 # Layup
 
-React + TypeScript + Tailwind CSS プロジェクト
+Next.js + TypeScript + Tailwind CSS + Firebase プロジェクト
 
 ## セットアップ
 
@@ -18,6 +18,8 @@ npm install
 npm run dev
 ```
 
+http://localhost:3000 でアプリが起動します。
+
 ## ビルド
 
 プロダクション用ビルド:
@@ -26,11 +28,5 @@ npm run dev
 npm run build
 ```
 
-## プレビュー
-
-ビルドしたアプリをプレビュー:
-
-```bash
-npm run preview
-```
+ビルドとFirebase Hostingへのデプロイが実行されます。
 
