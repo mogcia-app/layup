@@ -53,6 +53,8 @@ interface HoleScore {
   totalPutts: number // 合計パット数（自動計算）
   gir: boolean
   fairway: 'hit' | 'miss' | null
+  isOB?: boolean // OBフラグ
+  isProvisional?: boolean // プレイング4フラグ
 }
 
 interface RoundSetup {
@@ -180,6 +182,8 @@ export default function Score() {
                       totalPutts: hole.putts || 0,
                       gir: hole.gir || false,
                       fairway: hole.fairway || null,
+                      isOB: hole.isOB || false,
+                      isProvisional: hole.isProvisional || false,
                     }
                   })
                   
@@ -330,6 +334,8 @@ export default function Score() {
         totalPutts: 0,
         gir: false,
         fairway: null,
+        isOB: false,
+        isProvisional: false,
       }
     })
 
@@ -423,6 +429,43 @@ export default function Score() {
     updateHole(holeIndex, { strokes: newStrokes })
   }
 
+  // OB/プレイング4の設定を更新
+  const handleOBProvisionalChange = (holeIndex: number, isOB: boolean, isProvisional: boolean) => {
+    const hole = holes[holeIndex]
+    let newStrokes = [...hole.strokes]
+    
+    // プレイング4が選択された場合、2打目のstrokeNumberを5に変更
+    if (isProvisional && newStrokes.length >= 2) {
+      newStrokes = newStrokes.map((stroke, index) => {
+        if (index === 1) {
+          // 2打目を5打目に変更
+          return { ...stroke, strokeNumber: 5 }
+        } else if (index > 1) {
+          // 3打目以降は+4（5打目から始まるため）
+          return { ...stroke, strokeNumber: stroke.strokeNumber + 4 }
+        }
+        return stroke
+      })
+    } else if (!isProvisional && newStrokes.length >= 2) {
+      // プレイング4が解除された場合、2打目を2に戻す
+      newStrokes = newStrokes.map((stroke, index) => {
+        if (index === 1) {
+          return { ...stroke, strokeNumber: 2 }
+        } else if (index > 1) {
+          // 3打目以降は-4（元に戻す）
+          return { ...stroke, strokeNumber: Math.max(1, stroke.strokeNumber - 4) }
+        }
+        return stroke
+      })
+    }
+    
+    updateHole(holeIndex, {
+      isOB,
+      isProvisional,
+      strokes: newStrokes,
+    })
+  }
+
   // パット情報を更新
   const updatePuttInfo = (holeIndex: number, puttInfo: PuttInfo | null) => {
     updateHole(holeIndex, { puttInfo })
@@ -502,7 +545,12 @@ export default function Score() {
   // ホールの合計ストローク数を計算
   const calculateHoleTotalStrokes = (hole: HoleScore): number => {
     if (!Array.isArray(hole.strokes)) return 0
-    return hole.strokes.length + (hole.puttInfo?.putts?.length || 0)
+    let baseStrokes = hole.strokes.length + (hole.puttInfo?.putts?.length || 0)
+    // OBの場合は+2打
+    if (hole.isOB) {
+      baseStrokes += 2
+    }
+    return baseStrokes
   }
 
   // ホールの合計パット数を取得
@@ -548,6 +596,8 @@ export default function Score() {
           totalPutts: 0,
           gir: false,
           fairway: null,
+          isOB: false,
+          isProvisional: false,
         }
       })
 
@@ -817,6 +867,110 @@ export default function Score() {
                 />
               </div>
             )}
+            {/* 2番ホールの場合は画像を表示 */}
+            {currentHole.hole === 2 && (
+              <div className="mb-6">
+                <Image
+                  src="/out3.png"
+                  alt="2番ホールマップ"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            )}
+            {/* 3番ホールの場合は画像を表示 */}
+            {currentHole.hole === 3 && (
+              <div className="mb-6">
+                <Image
+                  src="/out2.png"
+                  alt="3番ホールマップ"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            )}
+            {/* 4番ホールの場合は画像を表示 */}
+            {currentHole.hole === 4 && (
+              <div className="mb-6">
+                <Image
+                  src="/out4.png"
+                  alt="4番ホールマップ"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            )}
+            {/* 5番ホールの場合は画像を表示 */}
+            {currentHole.hole === 5 && (
+              <div className="mb-6">
+                <Image
+                  src="/out5.png"
+                  alt="5番ホールマップ"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            )}
+            {/* 6番ホールの場合は画像を表示 */}
+            {currentHole.hole === 6 && (
+              <div className="mb-6">
+                <Image
+                  src="/out6.png"
+                  alt="6番ホールマップ"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            )}
+            {/* 7番ホールの場合は画像を表示 */}
+            {currentHole.hole === 7 && (
+              <div className="mb-6">
+                <Image
+                  src="/out7.png"
+                  alt="7番ホールマップ"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            )}
+            {/* 8番ホールの場合は画像を表示 */}
+            {currentHole.hole === 8 && (
+              <div className="mb-6">
+                <Image
+                  src="/out8.png"
+                  alt="8番ホールマップ"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            )}
+            {/* 9番ホールの場合は画像を表示 */}
+            {currentHole.hole === 9 && (
+              <div className="mb-6">
+                <Image
+                  src="/out9.png"
+                  alt="9番ホールマップ"
+                  width={600}
+                  height={400}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            )}
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-800 text-center">
                 {currentHole.hole}番
@@ -908,6 +1062,43 @@ export default function Score() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                         />
                       </div>
+                      {/* 1打目の下にOBとプレイング4の選択ボタン */}
+                      {strokeIndex === 0 && (
+                        <div className="ml-16 space-y-2">
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleOBProvisionalChange(
+                                currentHoleIndex,
+                                !currentHole.isOB,
+                                currentHole.isProvisional || false
+                              )}
+                              className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                                currentHole.isOB
+                                  ? 'bg-red-600 text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              OB
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleOBProvisionalChange(
+                                currentHoleIndex,
+                                currentHole.isOB || false,
+                                !currentHole.isProvisional
+                              )}
+                              className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                                currentHole.isProvisional
+                                  ? 'bg-orange-600 text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              プレイング4
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       {/* 過去履歴に基づく推奨クラブ */}
                       <div className="ml-16">
                         {recommendedClub ? (
